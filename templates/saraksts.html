@@ -17,4 +17,9 @@ Saraksts
     <li>{{vardi[i]}}<img src={{bilde[i]}} height="(10*i)px" width="50px"></li>
     {% endfor %}
 </ol>
+
+<h3>veel viens veids</h3>
+    {% for viens in visi%}
+    <li>{{viens[0]}}, <img src ={{viens[1]}} height="50px" width="50px">, <p5>{{viens[2]}}</p5></li>
+    {% endfor %}
 {%endblock%}

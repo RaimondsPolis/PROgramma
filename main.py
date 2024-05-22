@@ -32,7 +32,8 @@ def info():
     if request.method == "POST":
         nosaukums = request.form["nosaukums"]
         adrese = request.form["adrese"]
-        rinda = nosaukums + ", " + adrese
+        komentars = request.form["komentars"]
+        rinda = nosaukums + ", " + adrese + ", " + komentars
         pierakstit_klat(rinda)
     return render_template("info.html")
 
