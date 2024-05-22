@@ -11,20 +11,32 @@
  var ctx = myCanvas.getContext("2d");
 
 
- var Monkey_x = 0;
- var Monkey_y = 0;
+ var Monkey_x = myCanvas.width/2; 
+ var Monkey_y = myCanvas.height/2;
  var MonkeyImg = new Image();
  MonkeyImg.src = "https://www.simpleimageresizer.com/_uploads/photos/e416dad8/png-clipart-monkey-monkey_90x60.png";         // The bug
 
- var melon_x = 0;
- var melon_y = 0;
+ var Catcher = new Image();
+ Catcher.src = "./SpelesBildes/baseballGlove.png";
+ var Catcher_x = myCanvas.width/2; 
+ var Catcher_y = (myCanvas.height/2)-100;
+
+ var melon_x;
+ var melon_y;
  var MelonImg = new Image();
- MelonImg.src = "https://s2js.com/img/etc/watermelon2.png";  // The melon
+ //MelonImg.src = "https://s2js.com/img/etc/watermelon2.png";  // The melon
+MelonImg.src = "./SpelesBildes/banana.png";
+
+ var spike = new Image();
+ spike.src = "./SpelesBildes/spikeBall.png";
+ var spike_speed = 2;
+ var spike_x;
+ var spike_y;
 
  var score = 0;
  var melon_speed = 3;
  var FPS = 40;                        // How many frames per second
- var time_remaining = 40;
+ var time_remaining = 180;
 
 
  function restart_game() {
@@ -32,14 +44,20 @@
      // some important variables back to the start.
      //
      // Alternatively they could just reload the page
-     time_remaining = 40;
+     time_remaining = 180;
      score = 0;
      melon_speed = 3;
      Monkey_y = myCanvas.height/2;
      Monkey_x = myCanvas.width/2;    
+     melon_y = 0;
+     spike_y = 0;
+     melon_x= Math.random() * (myCanvas.width - MelonImg.width);
+     spike_x= Math.random() * (myCanvas.width - MelonImg.width);
+     Catcher_x = myCanvas.width/2; 
+     Catcher_y = (myCanvas.height/2)-100;
      }
 
- function ImagesTouching(x1, y1, img1, x2, y2, img2) {
+     function ImagesTouching(x1, y1, img1, x2, y2, img2) {
           //
           // This function detects whether two images are touching - very useful function
           // 
@@ -54,54 +72,86 @@
 
     ctx.fillStyle= "purple";
     ctx.font = "20px Arial";
-    ctx.fillText("Score: " + score, 0, 20);                               // display the score
-
-
-                             // ensure bug always at bottom of canvas
-    ctx.drawImage(MonkeyImg, Monkey_x, Monkey_y);                                  // and draw it
+    ctx.fillText("Score: " + score, 0, 20);                               // display the score// ensure bug always at bottom of canvas
 
     ctx.fillText("Time Remaining: " + Math.round(time_remaining), 0, 45); // display time remaining
-    if (time_remaining <=20){
-        melon_speed = 6;
-    }
     if (time_remaining <= 0) {                                            // if the time has run out
           ctx.fillStyle= "red";
           ctx.font = "bold 50px Arial";                                   // say so
           ctx.textAlign="center";
           ctx.fillText("Game Over", myCanvas.width / 2, myCanvas.height / 2);  
           ctx.font = "bold 20px Arial";
-          ctx.fillText("Press S to play again", myCanvas.width / 2, (myCanvas.height / 2)+50);
+          ctx.fillText("Press J to play again", myCanvas.width / 2, (myCanvas.height / 2)+50);
           ctx.textAlign="left";
           }
     else {
           time_remaining = time_remaining - 1/FPS;                        // otherwise tick the time down
 
-          melon_y = melon_y + melon_speed;                                // move the melon down the screen
+              melon_y = melon_y + melon_speed;
+              spike_y= spike_y + spike_speed;
 
           if (melon_y > myCanvas.height) {                                // if it's gone past the bottom
               melon_y= 0;                                                 // move it back to the top
               melon_x= Math.random() * (myCanvas.width - MelonImg.width); // pick a random x-position, always fully visible
-              }   
+              score--;
+            }   
+          if(spike_y>myCanvas.height){
+            spike_y=0;
+            spike_x=Math.random() *  (myCanvas.width - MelonImg.width);
+          }
           }
 
     ctx.drawImage(MelonImg, melon_x, melon_y);                            // draw the melon
+    ctx.drawImage(spike, spike_x, spike_y);
+    ctx.drawImage(Catcher, Catcher_x, Catcher_y);
+    ctx.drawImage(MonkeyImg, Monkey_x, Monkey_y);  
 
-    if (ImagesTouching(Mokney_x, Monkey_y, MonkeyImg, melon_x, melon_y, MelonImg)) {  // check for touching
+    if (ImagesTouching(Monkey_x, Monkey_y, MonkeyImg, melon_x, melon_y, MelonImg)) {  // check for touching
         score= score + 1;                                                    // add one to score
         melon_speed = melon_speed + 0.5;                                     // and make it fall a bit faster
-        melon_x= -MelonImg.width;                                            // hide the melon so the score doesn't rocket
+        melon_x=Math.random() * (myCanvas.width - MelonImg.width);
+        melon_y = 0;                                            // hide the melon so the score doesn't rocket
+        
         }
-    } 
+        if (ImagesTouching(Monkey_x, Monkey_y, MonkeyImg, spike_x, spike_y, spike)) {  // check for touching
+        score= score - 1;                                                    // add one to score
+        spike_x=Math.random() * (myCanvas.width - MelonImg.width);
+        spike_y = 0;                                            // hide the melon so the score doesn't rocket
+        
+        }
+        if (ImagesTouching(Catcher_x, Catcher_y, Catcher, melon_x, melon_y, MelonImg)) {  // check for touching
+        score= score - 1;                                                    // add one to score
+        melon_x=Math.random() * (myCanvas.width - MelonImg.width);
+        melon_y = 0;                                            // hide the melon so the score doesn't rocket
+        
+        }
+        if (ImagesTouching(Catcher_x, Catcher_y, Catcher, spike_x, spike_y, spike)) {  // check for touching
+        score= score + 1;    
+        spike_speed +=0.25;                                             
+        spike_x=Math.random() * (myCanvas.width - MelonImg.width);
+        spike_y = 0;                                            // hide the melon so the score doesn't rocket
+        
+        }
+    }
 
  setInterval(Do_a_Frame, 1000/FPS);                                          // Call our frame renderer every this many milliseconds
 
 
  function MyKeyDownHandler (MyEvent) { 
-   if (MyEvent.keyCode == 37 && Monkey_x > 0) {Monkey_x = Monkey_x - 15;}                          // left
-   if (MyEvent.keyCode == 39 && Monkey_x+MonkeyImg.width < myCanvas.width) {Monkey_x = Monkey_x+15;}  // right
-   if (MyEvent.keyCode == 38 && Monkey_y > 0) {Monkey_y = Monkey_y - 15;}// up
-   if (MyEvent.keyCode == 40 && Monkey_y+MonkeyImg.width < myCanvas.width) {Monkey_y = Monkey_y+15;} //down
-   if (MyEvent.keyCode == 83) restart_game();                                             // S to restart 
+  //     Monkey movement !!!(arrow keys)!!!
+   if (MyEvent.keyCode == 37 && Monkey_x > 0) {Monkey_x = Monkey_x - 50;}                          // left
+   if (MyEvent.keyCode == 39 && Monkey_x+MonkeyImg.width < myCanvas.width) {Monkey_x = Monkey_x+50;}  // right    
+   if (MyEvent.keyCode == 38 && Monkey_y > 0) {Monkey_y = Monkey_y - 50;}// up
+   if (MyEvent.keyCode == 40 && Monkey_y+MonkeyImg.width < myCanvas.width) {Monkey_y = Monkey_y+50;} //down
+   //^^^ monkey movement ^^^ (arrow keys)
+
+    //Catcher movement !!!(ASDW)!!!
+    if (MyEvent.keyCode == 65 && Catcher_x > 0) {Catcher_x = Catcher_x - 50;} 
+    if (MyEvent.keyCode == 68 && Catcher_x+Catcher.width < myCanvas.width) {Catcher_x = Catcher_x+50;} 
+    if (MyEvent.keyCode == 87 && Catcher_y > 0) {Catcher_y = Catcher_y - 50;}// up
+    if (MyEvent.keyCode == 83 && Catcher_y+Catcher.width < myCanvas.width) {Catcher_y = Catcher_y+50;} //down
+    //CATCHER MOVEMENT ^^^^^^^^^    !!!(ASDW)!!!
+   if (MyEvent.keyCode == 74) restart_game();                                             // J to restart 
    MyEvent.preventDefault();
    }
 
