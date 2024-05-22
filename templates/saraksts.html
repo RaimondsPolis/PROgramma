@@ -1,0 +1,20 @@
+{% extends 'index.html'%}
+
+{% block nosaukums%}
+Saraksts
+{%endblock%}
+
+{% block saturs%}
+<p>viens paragrafs ar tekstu</p>
+<ol>
+    <li>{{vardi[0]}}<img src={{bilde[0]}} height="50px" width="50px"></li>
+    <li>{{vardi[1]}}<img src={{bilde[1]}} height="50px" width="50px"></li>
+    <li>{{vardi[2]}}<img src={{bilde[2]}} height="50px" width="50px"></li>
+</ol>
+<h3>alternatiivs veids</h3>
+<ol>
+    {% for i in range(garums) %}
+    <li>{{vardi[i]}}<img src={{bilde[i]}} height="(10*i)px" width="50px"></li>
+    {% endfor %}
+</ol>
+{%endblock%}
